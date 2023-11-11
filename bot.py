@@ -137,7 +137,10 @@ async def my_giveaway(bot: Client, message: Message):
 
 @jvbot.on_message(filters.command("result") & ~filters.private)
 async def send_giveaway_result(bot: Client, message: Message):
-    usr_id = int(message.text.split(" ",1)[1])
+    try:
+        usr_id = int(message.text.split(" ",1)[1])
+    except:
+        return await message.reply_text("send cmd along with giveaway id.\n\neg: /result 837382837")
     giveaway = await mydb.get_giveawayid(usr_id)
     if giveaway != None:
         giveaway = await giveaway.find_one({"_id": "data"})
@@ -186,7 +189,10 @@ async def send_giveaway_result(bot: Client, message: Message):
 
 @jvbot.on_message(filters.command("send") & ~filters.private)
 async def send_giveaway(bot: Client, message: Message):
-    usr_id = int(message.text.split(" ",1)[1])
+    try
+        usr_id = int(message.text.split(" ",1)[1])
+    except:
+        return await message.reply_text("send cmd along with giveaway id.\n\neg: /send 837382837")
     replied = message.reply_to_message
     await message.delete()
     giveaway = await mydb.get_giveawayid(usr_id)
