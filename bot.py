@@ -163,9 +163,9 @@ async def send_giveaway_result(bot: Client, message: Message):
                                 await bot.send_message(winner["_id"], f"You won giveaway in {message.chat.title}")
                             except:
                                 pass
-                            i += 1
                             _winners.append(winner["_id"])
                             await bot.send_message(usr_id, f"{i}. {UserMention} won giveaway in {message.chat.title}")
+                            i += 1
                         giveaway_users.remove(winner)
                     giveaway_text = giveaway["giveaway_text"].replace("{winners}", winner_text)
                     giveaway_text = giveaway_text.replace("{count}", str(giveaway_users_count))
