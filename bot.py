@@ -189,7 +189,7 @@ async def send_giveaway_result(bot: Client, message: Message):
 
 @jvbot.on_message(filters.command("send") & ~filters.private)
 async def send_giveaway(bot: Client, message: Message):
-    try
+    try:
         usr_id = int(message.text.split(" ",1)[1])
     except:
         return await message.reply_text("send cmd along with giveaway id.\n\neg: /send 837382837")
