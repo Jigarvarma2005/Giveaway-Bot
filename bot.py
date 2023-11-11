@@ -44,23 +44,36 @@ async def user_input(msg, text):
         return "403"
 
 
+@jvbot.on_message(filters.command("source") & filters.private)
+async def source_code(bot: Client, message: Message):
+    await message.reply_text("**Here is my source code**\n\nhttps://github.com/Jigarvarma2005/Giveaway-Bot",
+                             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Developer", url="https://t.me/JVBots")]]
+                                                               )
+    )
+
+
 @jvbot.on_message(filters.command("help") & filters.private)
 async def help_text(bot: Client, message: Message):
     await message.reply_text("""**Help Menu**
+
+*Channel Commands*
+/send id - Send giveaway message
+/result id [reply to giveaway msg]- Send giveaway result
 
 *Private Commands*
 /gen - Generate giveaway
 /delete - Delete giveaway
 /my - Get giveaway details
 
-*Channel Commands*
-/send - Send giveaway message
-/result - Send giveaway result""")
+/source - Get source code of bot
+
+@JVBots
+""")
 
 
 @jvbot.on_message(filters.command("start") & filters.private)
 async def start(bot: Client, message: Message):
-    await message.reply_text("Hi, I'm Giveaway Bot. I can help you to create and manage giveaway. Use /help to know how to use me.")
+    await message.reply_text("Hi, I'm Giveaway Bot.\nI can help you to create and manage giveaway. Use /help to know how to use me.\n\n@JVBots")
 
 
 @jvbot.on_message(filters.command("gen") & filters.private)
