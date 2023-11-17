@@ -4,6 +4,7 @@ import random
 import asyncio
 from pyrogram import Client, filters, enums, idle
 from pyrogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from config import Config
 from jvdb import MongoDB
 import logging
@@ -15,7 +16,11 @@ jvbot = Client(name="GiveawayBot", bot_token=Config.BOT_TOKEN, api_id=Config.API
 mydb = MongoDB(Config.MONGO_DB_URI)
 
 async def is_eligible(bot: Client, chatID: int, userID: int):
-    if member := await bot.get_chat_member(chatID, userID):
+    try:
+        member = await bot.get_chat_member(chatID, userID)
+    except UserNotParticipant:
+        return False
+    if member:
         if member.user.is_bot or member.user.is_deleted:
             return False
         if member.status in [enums.ChatMemberStatus.MEMBER, enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
