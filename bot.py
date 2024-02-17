@@ -20,19 +20,18 @@ async def is_eligible(bot: Client, chatID: int, userID: int):
         member = await bot.get_chat_member(chatID, userID)
     except UserNotParticipant:
         return False
-    if member:
-        if member.user.is_bot or member.user.is_deleted:
-            return False
-        if member.status in [enums.ChatMemberStatus.MEMBER, enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
-            member = member.user
-            if username := member.username:
-                return f"@{username}"
-            else:
-                return f"{member.mention}"
-        else:
-            return False
-    else:
+    if not member:
         return False
+    if member.user.is_bot or member.user.is_deleted:
+        return False
+    if member.status not in [
+        enums.ChatMemberStatus.MEMBER,
+        enums.ChatMemberStatus.OWNER,
+        enums.ChatMemberStatus.ADMINISTRATOR,
+    ]:
+        return False
+    member = member.user
+    return f"@{username}" if (username := member.username) else f"{member.mention}"
 
 
 async def user_input(msg, text):
@@ -41,10 +40,7 @@ async def user_input(msg, text):
         if user_res := user_res.text:
             if user_res.lower() == "/cancel":
                 return "403"
-            if user_res.lower() == "/skip":
-                return "503"
-            else:
-                return user_res
+            return "503" if user_res.lower() == "/skip" else user_res
     except asyncio.TimeoutError:
         return "403"
 
@@ -179,7 +175,13 @@ async def send_giveaway_result(bot: Client, message: Message):
                     giveaway_text = giveaway_text.replace("{count}", str(giveaway_users_count))
                     if replied:
                         win_msg = await replied.reply_text(giveaway_text)
-                        await bot.edit_message_text(message.chat.id, replied.id, "~~" + replied.text + "~~" + f"\n\n**Winners List**: {win_msg.link}", reply_markup=None)
+                        await bot.edit_message_text(
+                            message.chat.id,
+                            replied.id,
+                            f"~~{replied.text}~~"
+                            + f"\n\n**Winners List**: {win_msg.link}",
+                            reply_markup=None,
+                        )
                     else:
                         await bot.send_message(chat_id, giveaway_text)
                     await mydb.delete_giveawayid(usr_id)

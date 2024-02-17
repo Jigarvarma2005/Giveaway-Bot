@@ -10,17 +10,12 @@ class MongoDB:
     
     async def get_giveawayid(self, userid: int):
         user = await self.mygiveaways.find_one({"_id": userid})
-        if user != None:
-            userDb = self.db[str(userid)]
-            return userDb
-        else:
-            return None
+        return self.db[str(userid)] if user != None else None
     
     async def add_giveawayid(self, userid: int):
         if not (await self.mygiveaways.find_one({"_id": userid})):
             await self.mygiveaways.insert_one({"_id": userid})
-            userDb = self.db[str(userid)]
-            return userDb
+            return self.db[str(userid)]
         else:
             return None
     
@@ -36,15 +31,13 @@ class MongoDB:
     
     async def get_giveaway_users(self, userid: int):
         userDb = await self.get_giveawayid(userid)
-        if userDb != None:
-            giveaway = userDb.find({})
-            if giveaway != None:
-                count = await userDb.count_documents({})
-                return await giveaway.to_list(count)
-            else:
-                return None
-        else:
+        if userDb is None:
             return None
+        giveaway = userDb.find({})
+        if giveaway is None:
+            return None
+        count = await userDb.count_documents({})
+        return await giveaway.to_list(count)
     
     async def add_giveaway(self, userid: int, winners: int, msg_text: str, giveaway_text: str):
         userDb = await self.add_giveawayid(userid)
@@ -57,10 +50,7 @@ class MongoDB:
     async def get_giveaway_users_count(self, userid: int):
         userDb = await self.get_giveawayid(userid)
         if userDb != None:
-            if giveaway := await userDb.count_documents({}):
-                return giveaway
-            else:
-                return None
+            return giveaway if (giveaway := await userDb.count_documents({})) else None
         else:
             return None
     
